@@ -5,6 +5,7 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 import os
+
 import models
 import bcrypt
 from database import engine, get_db
@@ -67,6 +68,15 @@ def login_post(response: Response, email: str = Form(...), password: str = Form(
 @app.get("/admin_login", response_class=HTMLResponse)
 def admin_login_get(request: Request, error: str = None):
     return templates.TemplateResponse(request=request, name="admin_login.html", context={"request": request, "error": error})
+
+@app.post("/admin_login")
+def admin_login_post(response: Response, email: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.email == email, models.User.role == "admin").first()
+    if user and verify_password(password, user.password_hash):
+        response = RedirectResponse(url="/admin", status_code=status.HTTP_302_FOUND)
+        response.set_cookie(key="session_id", value=user.email)
+        return response
+    return RedirectResponse(url="/admin_login?error=Invalid admin credentials", status_code=status.HTTP_302_FOUND)
 
 @app.get("/signup", response_class=HTMLResponse)
 def signup_get(request: Request):
