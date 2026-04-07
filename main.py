@@ -283,7 +283,7 @@ def checkout_get(request: Request, db: Session = Depends(get_db)):
         if p: total += p.price * i.quantity
     return templates.TemplateResponse(request=request, name="checkout.html", context={"request": request, "total": total, "user": user})
 
-@app.post("/checkout")
+@app.post("/user/checkout")
 def checkout_post(request: Request, name: str = Form(...), email: str = Form(...), address: str = Form(...), city: str = Form(...), 
                   phone: str = Form(...), payment: str = Form(...), total_amount: float = Form(...), db: Session = Depends(get_db)):
     user = get_current_user_from_cookie(request, db)
