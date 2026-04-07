@@ -5,7 +5,6 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 import os
-
 import models
 import bcrypt
 from database import engine, get_db
@@ -292,19 +291,27 @@ def checkout_post(request: Request, name: str = Form(...), email: str = Form(...
     cart_items = db.query(models.CartItem).filter(models.CartItem.user_id == user.id).all()
     if not cart_items: return RedirectResponse(url="/user")
     
-    p0 = db.query(models.Product).filter(models.Product.id == cart_items[0].product_id).first()
-    new_order = models.Order(user_id=user.id, vendor_id=p0.vendor_id, cust_name=name, cust_email=email, address=address, city=city, phone_number=phone, payment_method=payment, total_amount=total_amount)
-    db.add(new_order)
-    db.commit()
-    
+    # Group items by Vendor
+    vendor_items = {}
     for ci in cart_items:
         p = db.query(models.Product).filter(models.Product.id == ci.product_id).first()
-        oi = models.OrderItem(order_id=new_order.id, product_id=ci.product_id, quantity=ci.quantity, price_at_time=p.price)
-        db.add(oi)
+        if p.vendor_id not in vendor_items: vendor_items[p.vendor_id] = []
+        vendor_items[p.vendor_id].append({"item": ci, "product": p})
+        
+    new_orders = []
+    for v_id, items_list in vendor_items.items():
+        v_total = sum(i["product"].price * i["item"].quantity for i in items_list)
+        new_order = models.Order(user_id=user.id, vendor_id=v_id, cust_name=name, cust_email=email, address=address, city=city, phone_number=phone, payment_method=payment, total_amount=v_total)
+        db.add(new_order)
+        db.commit() # Commit to get order.id
+        for i_data in items_list:
+            oi = models.OrderItem(order_id=new_order.id, product_id=i_data["item"].product_id, quantity=i_data["item"].quantity, price_at_time=i_data["product"].price)
+            db.add(oi)
+        new_orders.append(new_order)
     
     db.query(models.CartItem).filter(models.CartItem.user_id == user.id).delete()
     db.commit()
-    return templates.TemplateResponse(request=request, name="checkout_success.html", context={"request": request, "order": new_order})
+    return templates.TemplateResponse(request=request, name="checkout_success.html", context={"request": request, "orders": new_orders})
 
 @app.get("/user/order_status")
 def view_order_status(request: Request, db: Session = Depends(get_db)):

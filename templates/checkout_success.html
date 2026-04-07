@@ -5,30 +5,31 @@
   <title>EventPro — Success</title>
   <link rel="stylesheet" href="/static/style.css">
 </head>
-<body>
-  <div class="success-overlay">
-    <div class="success-card">
-      <div class="success-icon">✓</div>
-      <h1 style="font-size: 2rem; margin-bottom: 8px;">Order Placed Successfully!</h1>
-      <p style="color:var(--text-muted); margin-bottom:32px;">Thank you for your order. Your event is one step closer to reality.</p>
-
-      <div class="card" style="background: rgba(255,255,255,0.02); border-style: dashed; margin-bottom: 32px;">
-        <span class="card-title">Total Amount Paid</span>
-        <div class="card-value" style="color: var(--accent-orange); margin-top: 8px;">₹{{ order.total_amount }}</div>
+<body class="success-overlay">
+  <div class="success-card">
+    <div class="success-icon">✅</div>
+    <h2 style="font-size:1.8rem; margin-bottom:12px;">Orders Placed Successfully!</h2>
+    <p style="color:var(--text-secondary); margin-bottom:32px;">Thank you for your purchase. We've split your request into individual orders for each vendor.</p>
+    
+    <div style="text-align:left; margin-bottom:24px;">
+      <h3 style="font-size:0.8rem; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted); margin-bottom:12px;">Your Order Summaries:</h3>
+      {% for order in orders %}
+      <div class="info-item" style="margin-bottom:12px; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <label>Order ID: #{{ order.id }}</label>
+          <span style="font-size:0.8rem; color:var(--text-secondary);">Vendor ID: {{ order.vendor_id }}</span>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-weight:700; color:var(--accent-orange);">₹{{ order.total_amount }}</div>
+          <span class="badge badge-orange">Pending</span>
+        </div>
       </div>
+      {% endfor %}
+    </div>
 
-      <div class="info-grid">
-        <div class="info-item"><label>Name</label><span>{{ order.cust_name }}</span></div>
-        <div class="info-item"><label>Email</label><span>{{ order.cust_email }}</span></div>
-        <div class="info-item"><label>Order ID</label><span>#{{ order.id }}</span></div>
-        <div class="info-item"><label>Payment</label><span>{{ order.payment_method }}</span></div>
-        <div class="info-item" style="grid-column: span 2;"><label>Address</label><span>{{ order.address }}, {{ order.city }}, {{ order.state }} - {{ order.pincode }}</span></div>
-      </div>
-
-      <div style="display:flex; gap:12px; margin-top:32px;">
-        <a href="/user/order_status" class="btn btn-primary" style="flex:1;">Track Order Status</a>
-        <a href="/user" class="btn btn-outline" style="flex:1;">Continue Shopping</a>
-      </div>
+    <div style="display:flex; gap:12px; justify-content:center;">
+      <a href="/user/order_status" class="btn btn-primary">Track All Orders</a>
+      <a href="/user" class="btn btn-outline">Back to Home</a>
     </div>
   </div>
 </body>
