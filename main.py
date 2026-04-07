@@ -9,19 +9,20 @@ import models
 import bcrypt
 from database import engine, get_db
 
-# Use absolute path for static/templates to ensure they load on Vercel
+# Use absolute path for static/templates
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 models.Base.metadata.create_all(bind=engine)
 
-# Ensure default admin exists (especially for Vercel /tmp DB)
+ADMIN_EMAIL = "admin@eventpro.com"
+
+# Ensure default admin exists
 def init_db():
     db = next(get_db())
-    admin_email = "admin@eventpro.com"
-    if not db.query(models.User).filter(models.User.email == admin_email).first():
+    if not db.query(models.User).filter(models.User.email == ADMIN_EMAIL).first():
         admin = models.User(
             name="Super Admin",
-            email=admin_email,
+            email=ADMIN_EMAIL,
             password_hash=bcrypt.hashpw("admin123".encode("utf-8"), bcrypt.gensalt()).decode("utf-8"),
             role="admin"
         )
@@ -42,6 +43,14 @@ def get_current_user_from_cookie(request: Request, db: Session):
     session_id = request.cookies.get("session_id")
     if not session_id: return None
     return db.query(models.User).filter(models.User.email == session_id).first()
+
+def is_membership_expired(user: models.User) -> bool:
+    """Returns True if membership is expired (or missing for non-admin roles)."""
+    if user.role == "admin":
+        return False
+    if not user.membership_expiry:
+        return True
+    return datetime.utcnow() > user.membership_expiry
 
 # ================= AUTH ROUTES ================= #
 
@@ -89,9 +98,11 @@ def signup_post(name: str = Form(...), email: str = Form(...), password: str = F
     
     hashed_pass = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
     new_user = models.User(name=name, email=email, password_hash=hashed_pass, role=role, vendor_category=vendor_category)
-    if role == "user":
-        new_user.membership_number = f"MEM-{int(datetime.utcnow().timestamp())}"
-        new_user.membership_expiry = datetime.utcnow() + timedelta(days=365)
+    
+    # Assign membership for both users and vendors on signup (1 year)
+    new_user.membership_number = f"MEM-{int(datetime.utcnow().timestamp())}"
+    new_user.membership_expiry = datetime.utcnow() + timedelta(days=365)
+    
     db.add(new_user)
     db.commit()
     return RedirectResponse(url="/login", status_code=status.HTTP_302_FOUND)
@@ -102,25 +113,72 @@ def logout(response: Response):
     response.delete_cookie("session_id")
     return response
 
+@app.get("/membership_expired", response_class=HTMLResponse)
+def membership_expired(request: Request, db: Session = Depends(get_db)):
+    user = get_current_user_from_cookie(request, db)
+    return templates.TemplateResponse(request=request, name="membership_expired.html", context={"request": request, "user": user, "admin_email": ADMIN_EMAIL})
+
 # ================= ADMIN ROUTES ================= #
 
 @app.get("/admin")
 def admin_home(request: Request, db: Session = Depends(get_db)):
     user = get_current_user_from_cookie(request, db)
     if not user or user.role != "admin": return RedirectResponse(url="/login")
-    return templates.TemplateResponse(request=request, name="admin_dashboard.html", context={"request": request, "user": user})
+    # Count stats
+    total_users = db.query(models.User).filter(models.User.role == "user").count()
+    total_vendors = db.query(models.User).filter(models.User.role == "vendor").count()
+    total_orders = db.query(models.Order).count()
+    return templates.TemplateResponse(request=request, name="admin_dashboard.html", context={
+        "request": request, "user": user,
+        "total_users": total_users, "total_vendors": total_vendors, "total_orders": total_orders
+    })
 
 @app.get("/admin/maintain_user")
 def admin_maintain_user(request: Request, db: Session = Depends(get_db)):
     user = get_current_user_from_cookie(request, db)
     if not user or user.role != "admin": return RedirectResponse(url="/login")
-    return templates.TemplateResponse(request=request, name="admin_maintain_user.html", context={"request": request, "user": user})
+    now = datetime.utcnow()
+    users = db.query(models.User).filter(models.User.role == "user").all()
+    return templates.TemplateResponse(request=request, name="admin_maintain_user.html", context={
+        "request": request, "user": user, "users": users, "now": now
+    })
 
 @app.get("/admin/maintain_vendor")
 def admin_maintain_vendor(request: Request, db: Session = Depends(get_db)):
     user = get_current_user_from_cookie(request, db)
     if not user or user.role != "admin": return RedirectResponse(url="/login")
-    return templates.TemplateResponse(request=request, name="admin_maintain_vendor.html", context={"request": request, "user": user})
+    now = datetime.utcnow()
+    vendors = db.query(models.User).filter(models.User.role == "vendor").all()
+    return templates.TemplateResponse(request=request, name="admin_maintain_vendor.html", context={
+        "request": request, "user": user, "vendors": vendors, "now": now
+    })
+
+@app.post("/admin/update_membership/{uid}")
+def admin_update_membership(uid: int, months: int = Form(...), db: Session = Depends(get_db)):
+    """Admin extends membership by X months from today."""
+    target_user = db.query(models.User).filter(models.User.id == uid).first()
+    if target_user:
+        # Always calculate from current date
+        base = datetime.utcnow()
+        target_user.membership_expiry = base + timedelta(days=30 * months)
+        if not target_user.membership_number:
+            target_user.membership_number = f"MEM-{int(base.timestamp())}"
+        db.commit()
+    # Redirect back to appropriate page
+    if target_user and target_user.role == "vendor":
+        return RedirectResponse(url="/admin/maintain_vendor", status_code=status.HTTP_302_FOUND)
+    return RedirectResponse(url="/admin/maintain_user", status_code=status.HTTP_302_FOUND)
+
+@app.post("/admin/revoke_membership/{uid}")
+def admin_revoke_membership(uid: int, db: Session = Depends(get_db)):
+    """Admin immediately expires a user/vendor's membership."""
+    target_user = db.query(models.User).filter(models.User.id == uid).first()
+    if target_user:
+        target_user.membership_expiry = datetime.utcnow() - timedelta(days=1)
+        db.commit()
+    if target_user and target_user.role == "vendor":
+        return RedirectResponse(url="/admin/maintain_vendor", status_code=status.HTTP_302_FOUND)
+    return RedirectResponse(url="/admin/maintain_user", status_code=status.HTTP_302_FOUND)
 
 # ================= VENDOR ROUTES ================= #
 
@@ -128,12 +186,14 @@ def admin_maintain_vendor(request: Request, db: Session = Depends(get_db)):
 def vendor_home(request: Request, db: Session = Depends(get_db)):
     user = get_current_user_from_cookie(request, db)
     if not user or user.role != "vendor": return RedirectResponse(url="/login")
+    if is_membership_expired(user): return RedirectResponse(url="/membership_expired")
     return templates.TemplateResponse(request=request, name="vendor_dashboard.html", context={"request": request, "user": user})
 
 @app.get("/vendor/add_item")
 def vendor_add_item_page(request: Request, db: Session = Depends(get_db)):
     user = get_current_user_from_cookie(request, db)
     if not user or user.role != "vendor": return RedirectResponse(url="/login")
+    if is_membership_expired(user): return RedirectResponse(url="/membership_expired")
     products = db.query(models.Product).filter(models.Product.vendor_id == user.id).all()
     return templates.TemplateResponse(request=request, name="vendor_add_item.html", context={"request": request, "products": products, "user": user})
 
@@ -141,6 +201,7 @@ def vendor_add_item_page(request: Request, db: Session = Depends(get_db)):
 async def vendor_add_product(request: Request, name: str = Form(...), price: float = Form(...), description: str = Form(""), image: UploadFile = File(None), db: Session = Depends(get_db)):
     user = get_current_user_from_cookie(request, db)
     if not user: return RedirectResponse(url="/login")
+    if is_membership_expired(user): return RedirectResponse(url="/membership_expired")
     
     image_filename = "default.jpg"
     if image and image.filename:
@@ -154,10 +215,21 @@ async def vendor_add_product(request: Request, name: str = Form(...), price: flo
     db.commit()
     return RedirectResponse(url="/vendor/add_item", status_code=status.HTTP_302_FOUND)
 
+@app.post("/vendor/delete_product/{product_id}")
+def vendor_delete_product(product_id: int, request: Request, db: Session = Depends(get_db)):
+    user = get_current_user_from_cookie(request, db)
+    if not user: return RedirectResponse(url="/login")
+    product = db.query(models.Product).filter(models.Product.id == product_id, models.Product.vendor_id == user.id).first()
+    if product:
+        db.delete(product)
+        db.commit()
+    return RedirectResponse(url="/vendor/add_item", status_code=status.HTTP_302_FOUND)
+
 @app.get("/vendor/product_status")
 def vendor_product_status(request: Request, db: Session = Depends(get_db)):
     user = get_current_user_from_cookie(request, db)
     if not user or user.role != "vendor": return RedirectResponse(url="/login")
+    if is_membership_expired(user): return RedirectResponse(url="/membership_expired")
     orders = db.query(models.Order).filter(models.Order.vendor_id == user.id).all()
     return templates.TemplateResponse(request=request, name="vendor_product_status.html", context={"request": request, "orders": orders, "user": user})
 
@@ -180,6 +252,7 @@ def vendor_update_status_post(order_id: int, order_status: str = Form(...), db: 
 def vendor_requests(request: Request, db: Session = Depends(get_db)):
     user = get_current_user_from_cookie(request, db)
     if not user or user.role != "vendor": return RedirectResponse(url="/login")
+    if is_membership_expired(user): return RedirectResponse(url="/membership_expired")
     item_requests = db.query(models.ItemRequest).filter(models.ItemRequest.vendor_id == user.id).all()
     requests_data = []
     for ir in item_requests:
@@ -201,12 +274,14 @@ def delete_vendor_request(req_id: int, db: Session = Depends(get_db)):
 def user_portal(request: Request, db: Session = Depends(get_db)):
     user = get_current_user_from_cookie(request, db)
     if not user or user.role != "user": return RedirectResponse(url="/login")
+    if is_membership_expired(user): return RedirectResponse(url="/membership_expired")
     return templates.TemplateResponse(request=request, name="user_portal.html", context={"request": request, "user": user})
 
 @app.get("/user/vendors")
 def list_vendors(request: Request, category: str, db: Session = Depends(get_db)):
     user = get_current_user_from_cookie(request, db)
     if not user: return RedirectResponse(url="/login")
+    if is_membership_expired(user): return RedirectResponse(url="/membership_expired")
     vendors = db.query(models.User).filter(models.User.role == "vendor", models.User.vendor_category == category).all()
     return templates.TemplateResponse(request=request, name="user_vendors.html", context={"request": request, "vendors": vendors, "category": category})
 
@@ -214,6 +289,7 @@ def list_vendors(request: Request, category: str, db: Session = Depends(get_db))
 def list_products(request: Request, vendor_id: int, db: Session = Depends(get_db)):
     user = get_current_user_from_cookie(request, db)
     if not user: return RedirectResponse(url="/login")
+    if is_membership_expired(user): return RedirectResponse(url="/membership_expired")
     vendor = db.query(models.User).filter(models.User.id == vendor_id).first()
     products = db.query(models.Product).filter(models.Product.vendor_id == vendor_id).all()
     return templates.TemplateResponse(request=request, name="user_products.html", context={"request": request, "products": products, "vendor": vendor})
@@ -303,7 +379,7 @@ def checkout_post(request: Request, name: str = Form(...), email: str = Form(...
         v_total = sum(i["product"].price * i["item"].quantity for i in items_list)
         new_order = models.Order(user_id=user.id, vendor_id=v_id, cust_name=name, cust_email=email, address=address, city=city, phone_number=phone, payment_method=payment, total_amount=v_total)
         db.add(new_order)
-        db.commit() # Commit to get order.id
+        db.commit()
         for i_data in items_list:
             oi = models.OrderItem(order_id=new_order.id, product_id=i_data["item"].product_id, quantity=i_data["item"].quantity, price_at_time=i_data["product"].price)
             db.add(oi)
@@ -320,11 +396,21 @@ def view_order_status(request: Request, db: Session = Depends(get_db)):
     orders = db.query(models.Order).filter(models.Order.user_id == user.id).all()
     return templates.TemplateResponse(request=request, name="user_order_status.html", context={"request": request, "orders": orders})
 
-@app.post("/user/request_item")
-def request_item(request: Request, vendor_id: int = Form(...), item_name: str = Form(...), db: Session = Depends(get_db)):
+# ================= REQUEST ITEM ================= #
+
+@app.get("/user/request_item/{vendor_id}", response_class=HTMLResponse)
+def request_item_get(vendor_id: int, request: Request, db: Session = Depends(get_db)):
+    user = get_current_user_from_cookie(request, db)
+    if not user: return RedirectResponse(url="/login")
+    if is_membership_expired(user): return RedirectResponse(url="/membership_expired")
+    vendor = db.query(models.User).filter(models.User.id == vendor_id).first()
+    return templates.TemplateResponse(request=request, name="user_request_item.html", context={"request": request, "vendor_id": vendor_id, "vendor": vendor})
+
+@app.post("/user/request_item/{vendor_id}")
+def request_item_post(vendor_id: int, request: Request, item_name: str = Form(...), db: Session = Depends(get_db)):
     user = get_current_user_from_cookie(request, db)
     if not user: return RedirectResponse(url="/login")
     new_req = models.ItemRequest(user_id=user.id, vendor_id=vendor_id, item_name=item_name)
     db.add(new_req)
     db.commit()
-    return RedirectResponse(url="/user", status_code=status.HTTP_302_FOUND)
+    return RedirectResponse(url=f"/user/products/{vendor_id}", status_code=status.HTTP_302_FOUND)

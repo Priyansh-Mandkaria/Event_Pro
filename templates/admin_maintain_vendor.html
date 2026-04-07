@@ -4,6 +4,18 @@
   <meta charset="UTF-8">
   <title>EventPro — Maintain Vendors</title>
   <link rel="stylesheet" href="/static/style.css">
+  <style>
+    .expiry-badge { display:inline-block; padding:3px 10px; border-radius:20px; font-size:0.78rem; font-weight:600; }
+    .expiry-active { background:rgba(34,197,94,0.15); color:#22c55e; }
+    .expiry-expired { background:rgba(239,68,68,0.15); color:#ef4444; }
+    .membership-form { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .membership-form select { 
+      background:var(--bg-input,#1e293b); border:1px solid var(--border,#334155); 
+      color:var(--text-primary,#f1f5f9); padding:6px 10px; border-radius:8px; font-size:0.82rem;
+    }
+    .user-row td { vertical-align:middle; }
+    .category-tag { display:inline-block; padding:2px 10px; border-radius:20px; font-size:0.77rem; background:rgba(249,115,22,0.15); color:var(--accent-orange,#f97316); font-weight:600; }
+  </style>
 </head>
 <body>
   <div class="app-layout">
@@ -18,35 +30,88 @@
     <div class="main-content">
       <div class="top-bar">
         <span class="top-bar-title">Admin / Maintain Vendors</span>
+        <div class="top-bar-right">
+          <span class="badge badge-orange">{{ vendors|length }} Vendors</span>
+        </div>
       </div>
       <div class="page-content">
-        <h2 style="font-size:1.4rem; margin-bottom:24px;">Vendor Management</h2>
-        <div class="card" style="margin-bottom:16px;">
-          <h3 style="font-size:0.9rem; color:var(--text-muted); margin-bottom:16px; text-transform:uppercase; letter-spacing:1px;">🎟 Membership</h3>
-          <div class="admin-action-row">
-            <div>
-              <div style="font-weight:600;">Vendor Membership</div>
-              <div style="font-size:0.8rem; color:var(--text-muted);">Manage vendor membership plans and subscriptions</div>
-            </div>
-            <div class="admin-action-buttons">
-              <button class="btn btn-primary btn-sm">+ Add</button>
-              <button class="btn btn-outline btn-sm">✏ Update</button>
-            </div>
-          </div>
+        <h2 style="font-size:1.4rem; margin-bottom:8px;">🏪 Vendor Management</h2>
+        <p style="color:var(--text-muted); margin-bottom:24px;">Control vendor memberships. Expired vendors cannot list products or receive orders.</p>
+
+        {% if vendors %}
+        <div class="card" style="padding:0; overflow:hidden;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Vendor</th>
+                <th>Email</th>
+                <th>Category</th>
+                <th>Membership #</th>
+                <th>Expiry</th>
+                <th>Status</th>
+                <th style="min-width:280px;">Extend Membership</th>
+                <th>Revoke</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for v in vendors %}
+              {% set expired = (not v.membership_expiry) or (v.membership_expiry < now) %}
+              <tr class="user-row">
+                <td>
+                  <div style="font-weight:600;">{{ v.name }}</div>
+                  <div style="font-size:0.75rem; color:var(--text-muted);">ID: {{ v.id }}</div>
+                </td>
+                <td style="color:var(--text-muted); font-size:0.85rem;">{{ v.email }}</td>
+                <td>
+                  <span class="category-tag">{{ v.vendor_category or '—' }}</span>
+                </td>
+                <td style="font-size:0.82rem;">{{ v.membership_number or '—' }}</td>
+                <td style="font-size:0.82rem;">
+                  {% if v.membership_expiry %}
+                    {{ v.membership_expiry.strftime('%d %b %Y') }}
+                  {% else %}
+                    <span style="color:var(--text-muted);">Not set</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if expired %}
+                    <span class="expiry-badge expiry-expired">⛔ Expired</span>
+                  {% else %}
+                    <span class="expiry-badge expiry-active">✅ Active</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <form action="/admin/update_membership/{{ v.id }}" method="POST" class="membership-form">
+                    <select name="months">
+                      <option value="1">1 Month</option>
+                      <option value="3">3 Months</option>
+                      <option value="6">6 Months</option>
+                      <option value="12" selected>1 Year</option>
+                      <option value="24">2 Years</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary btn-sm">✚ Extend</button>
+                  </form>
+                </td>
+                <td>
+                  {% if not expired %}
+                  <form action="/admin/revoke_membership/{{ v.id }}" method="POST" onsubmit="return confirm('Revoke membership for {{ v.name }}?')">
+                    <button type="submit" class="btn btn-danger btn-sm">✗ Revoke</button>
+                  </form>
+                  {% else %}
+                    <span style="color:var(--text-muted); font-size:0.8rem;">—</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
-        <div class="card">
-          <h3 style="font-size:0.9rem; color:var(--text-muted); margin-bottom:16px; text-transform:uppercase; letter-spacing:1px;">🏪 Vendor Management</h3>
-          <div class="admin-action-row">
-            <div>
-              <div style="font-weight:600;">Manage Vendors</div>
-              <div style="font-size:0.8rem; color:var(--text-muted);">Add or update vendor profiles across all categories</div>
-            </div>
-            <div class="admin-action-buttons">
-              <button class="btn btn-primary btn-sm">+ Add</button>
-              <button class="btn btn-outline btn-sm">✏ Update</button>
-            </div>
-          </div>
+        {% else %}
+        <div class="card" style="text-align:center; padding:60px; color:var(--text-muted);">
+          <div style="font-size:3rem; margin-bottom:12px;">🏪</div>
+          <p>No registered vendors yet.</p>
         </div>
+        {% endif %}
       </div>
     </div>
   </div>

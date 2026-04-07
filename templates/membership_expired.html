@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>EventPro — Membership Expired</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <style>
+    body { margin: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; background: var(--bg-base, #0f172a); }
+    .expired-container {
+      text-align: center;
+      max-width: 520px;
+      padding: 48px 40px;
+      background: var(--bg-card, #1e293b);
+      border-radius: 20px;
+      border: 1px solid rgba(239,68,68,0.3);
+      box-shadow: 0 0 60px rgba(239,68,68,0.08);
+      animation: fadeIn 0.5s ease;
+    }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    .icon-circle {
+      width: 90px; height: 90px;
+      background: rgba(239,68,68,0.12);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.8rem;
+      margin: 0 auto 28px;
+      border: 2px solid rgba(239,68,68,0.3);
+    }
+    .expired-title {
+      font-size: 1.7rem; font-weight: 700;
+      color: #ef4444;
+      margin-bottom: 12px;
+    }
+    .expired-subtitle {
+      color: var(--text-muted, #94a3b8);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+    .contact-box {
+      background: rgba(239,68,68,0.05);
+      border: 1px solid rgba(239,68,68,0.15);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 32px;
+      text-align: left;
+    }
+    .contact-box .label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted, #94a3b8);
+      margin-bottom: 8px;
+    }
+    .contact-box .email-link {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #f97316;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      word-break: break-all;
+    }
+    .contact-box .email-link:hover { text-decoration: underline; }
+    .contact-box .note {
+      font-size: 0.8rem;
+      color: var(--text-muted, #94a3b8);
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+    .btn-logout {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      background: #ef4444;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .btn-logout:hover { background: #dc2626; transform: translateY(-1px); }
+    .user-info {
+      font-size: 0.82rem;
+      color: var(--text-muted, #94a3b8);
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="expired-container">
+    <div class="icon-circle">⛔</div>
+
+    <div class="expired-title">Membership Expired</div>
+    <div class="expired-subtitle">
+      {% if user %}
+        Hi <strong style="color:var(--text-primary,#f1f5f9);">{{ user.name }}</strong>, your EventPro membership has expired.
+        You cannot access the platform until your membership is renewed by an administrator.
+      {% else %}
+        Your EventPro membership has expired. Please contact the administrator to renew your access.
+      {% endif %}
+    </div>
+
+    <div class="contact-box">
+      <div class="label">📧 Contact Administrator</div>
+      <a href="mailto:{{ admin_email }}" class="email-link">
+        <span>✉</span> {{ admin_email }}
+      </a>
+      <div class="note">Send an email to the admin with your registered email address and request a membership renewal.</div>
+    </div>
+
+    <a href="/logout" class="btn-logout">🚪 Logout</a>
+
+    {% if user %}
+    <div class="user-info">
+      Logged in as: {{ user.email }}
+      {% if user.membership_expiry %}
+        · Expired on {{ user.membership_expiry.strftime('%d %b %Y') }}
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+</body>
+</html>

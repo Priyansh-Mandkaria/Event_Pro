@@ -7,13 +7,29 @@
 </head>
 <body>
   <div class="app-layout">
-    <div class="main-content" style="margin-left:0; align-items:center; justify-content:center;">
-      <div class="auth-card" style="max-width:500px;">
+    <nav class="sidebar" style="width:200px;">
+      <div class="sidebar-logo"><h2>⚡ EventPro</h2><p>User Portal</p></div>
+      <div class="sidebar-section-label">Categories</div>
+      <a href="/user/vendors?category=Catering" class="category-pill">🍽 Catering</a>
+      <a href="/user/vendors?category=Florist" class="category-pill">🌸 Florist</a>
+      <a href="/user/vendors?category=Decoration" class="category-pill">🎨 Decoration</a>
+      <a href="/user/vendors?category=Lightning" class="category-pill">💡 Lighting</a>
+      <div style="margin-top:auto; padding: 0 12px 20px;">
+        <a href="/logout" class="btn btn-danger btn-full btn-sm">🚪 Logout</a>
+      </div>
+    </nav>
+    <div class="main-content" style="margin-left:200px; display:flex; align-items:center; justify-content:center;">
+      <div class="auth-card" style="max-width:520px; width:100%;">
         <div class="auth-logo">
-          <h2 style="font-size:1.8rem; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Custom Request</h2>
+          <h2 style="font-size:1.8rem; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">📋 Custom Request</h2>
+          {% if vendor %}
+          <p style="color:var(--text-muted);">Requesting from <strong style="color:var(--text-primary);">{{ vendor.name }}</strong></p>
+          {% else %}
           <p>Need something special not listed? Ask the vendor.</p>
+          {% endif %}
         </div>
 
+        <!-- FIX: POST to /user/request_item/{vendor_id} (path param) -->
         <form action="/user/request_item/{{ vendor_id }}" method="POST">
           <div class="form-group" style="margin-bottom:24px;">
             <label class="form-label">What are you looking for?</label>
@@ -22,7 +38,7 @@
 
           <div style="display:flex; flex-direction:column; gap:12px;">
             <button type="submit" class="btn btn-primary btn-full" style="padding:14px;">Submit Request →</button>
-            <a href="/user/products/{{ vendor_id }}" class="btn btn-outline btn-full">Cancel</a>
+            <a href="/user/products/{{ vendor_id }}" class="btn btn-outline btn-full">← Back to Products</a>
           </div>
         </form>
 
