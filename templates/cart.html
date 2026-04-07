@@ -46,14 +46,10 @@
                 <tr>
                   <td>
                     <div style="display:flex; align-items:center; gap:12px;">
-                      {% if i.product.image_name and i.product.image_name != 'default.png' %}
-                      <img src="/static/uploads/{{ i.product.image_name }}" style="width:48px; height:48px; object-fit:cover; border-radius:6px;">
-                      {% else %}
                       <div style="width:48px; height:48px; background:var(--bg-card-alt); border-radius:6px; display:flex; align-items:center; justify-content:center;">📦</div>
-                      {% endif %}
                       <div>
-                        <div style="font-weight:600;">{{ i.product.name }}</div>
-                        <div style="font-size:0.75rem; color:var(--text-muted);">₹{{ i.product.price }} per unit</div>
+                        <div style="font-weight:600;">{{ i.name }}</div>
+                        <div style="font-size:0.75rem; color:var(--text-muted);">₹{{ i.price }} per unit</div>
                       </div>
                     </div>
                   </td>
@@ -102,11 +98,11 @@
             <h3 style="font-size:0.9rem; margin-bottom:20px; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted);">Order Summary</h3>
             <div style="display:flex; justify-content:space-between; margin-bottom:12px; font-size:0.9rem;">
               <span style="color:var(--text-secondary);">Subtotal</span>
-              <span>₹{{ grand_total }}</span>
+              <span>₹{{ total }}</span>
             </div>
             <div style="display:flex; justify-content:space-between; margin-bottom:20px; font-size:1.1rem; font-weight:700;">
               <span>Grand Total</span>
-              <span style="color:var(--accent-orange);">₹{{ grand_total }}</span>
+              <span style="color:var(--accent-orange);">₹{{ total }}</span>
             </div>
             <a href="/user/checkout" class="btn btn-primary btn-full">Proceed to Checkout →</a>
           </div>
