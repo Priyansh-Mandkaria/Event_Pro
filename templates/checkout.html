@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>EventPro — Checkout</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="app-layout">
+    <div class="main-content" style="margin-left:0; align-items:center; justify-content:center;">
+      <div class="auth-card" style="max-width:700px;">
+        <div class="auth-logo">
+          <h2 style="font-size:1.8rem; background: var(--gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">Secure Checkout</h2>
+          <p>Complete your booking details below</p>
+        </div>
+
+        <form action="/user/checkout" method="POST">
+          <div class="grid-2">
+            <!-- Left Side -->
+            <div>
+              <div class="form-group">
+                <label class="form-label">Full Name</label>
+                <input type="text" name="name" class="form-control" placeholder="John Doe" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email Address</label>
+                <input type="email" name="email" class="form-control" placeholder="john@example.com" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Phone Number</label>
+                <input type="text" name="number" class="form-control" placeholder="+91 00000 00000" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Payment Method</label>
+                <select name="payment_method" class="form-control" required>
+                  <option value="UPI">UPI Transfer</option>
+                  <option value="Card">Credit/Debit Card</option>
+                  <option value="Cash">Cash on Delivery</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Right Side -->
+            <div>
+              <div class="form-group">
+                <label class="form-label">Delivery Address</label>
+                <input type="text" name="address" class="form-control" placeholder="House/Flat No, Street" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">City</label>
+                <input type="text" name="city" class="form-control" placeholder="Your City" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">State</label>
+                <input type="text" name="state" class="form-control" placeholder="Your State" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Pincode</label>
+                <input type="text" name="pincode" class="form-control" placeholder="000 000" required>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:32px; text-align:center;">
+            <p style="color:var(--text-muted); font-size: 0.85rem; margin-bottom:16px;">By clicking 'Order Now', you agree to our terms of service.</p>
+            <button type="submit" class="btn btn-primary btn-full" style="padding: 14px;">Confirm Order Now →</button>
+            <a href="/user/cart" class="btn btn-outline btn-full" style="margin-top:12px;">Back to Cart</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

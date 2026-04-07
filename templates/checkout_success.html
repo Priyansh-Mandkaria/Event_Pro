@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>EventPro — Success</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="success-overlay">
+    <div class="success-card">
+      <div class="success-icon">✓</div>
+      <h1 style="font-size: 2rem; margin-bottom: 8px;">Order Placed Successfully!</h1>
+      <p style="color:var(--text-muted); margin-bottom:32px;">Thank you for your order. Your event is one step closer to reality.</p>
+
+      <div class="card" style="background: rgba(255,255,255,0.02); border-style: dashed; margin-bottom: 32px;">
+        <span class="card-title">Total Amount Paid</span>
+        <div class="card-value" style="color: var(--accent-orange); margin-top: 8px;">₹{{ order.total_amount }}</div>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-item"><label>Name</label><span>{{ order.cust_name }}</span></div>
+        <div class="info-item"><label>Email</label><span>{{ order.cust_email }}</span></div>
+        <div class="info-item"><label>Order ID</label><span>#{{ order.id }}</span></div>
+        <div class="info-item"><label>Payment</label><span>{{ order.payment_method }}</span></div>
+        <div class="info-item" style="grid-column: span 2;"><label>Address</label><span>{{ order.address }}, {{ order.city }}, {{ order.state }} - {{ order.pincode }}</span></div>
+      </div>
+
+      <div style="display:flex; gap:12px; margin-top:32px;">
+        <a href="/user/order_status" class="btn btn-primary" style="flex:1;">Track Order Status</a>
+        <a href="/user" class="btn btn-outline" style="flex:1;">Continue Shopping</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

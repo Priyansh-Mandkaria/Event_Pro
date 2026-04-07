@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>EventPro — Login</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="auth-wrapper">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <h1>⚡ EventPro</h1>
+        <p>Premium Event Management Platform</p>
+      </div>
+
+      <div class="auth-tabs">
+        <a href="/login" class="auth-tab active">Login</a>
+        <a href="/signup" class="auth-tab">Sign Up</a>
+        <a href="/admin_login" class="auth-tab">Admin</a>
+      </div>
+
+      {% if request.query_params.get("error") %}
+      <div class="error-banner">⚠ {{ request.query_params.get("error") }}</div>
+      {% endif %}
+
+      <form action="/login" method="POST">
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" name="email" class="form-control" placeholder="you@example.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full" style="margin-top:8px;">Sign In →</button>
+      </form>
+
+      <div class="auth-divider"><span>Don't have an account?</span></div>
+      <a href="/signup" class="btn btn-outline btn-full">Create Account</a>
+    </div>
+  </div>
+</body>
+</html>

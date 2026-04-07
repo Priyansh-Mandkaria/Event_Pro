@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>EventPro — Elevate Your Events</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <style>
+    .hero-section {
+      text-align: center;
+      padding: 120px 20px;
+      background: radial-gradient(circle at 50% 50%, rgba(249,115,22,0.1) 0%, transparent 60%);
+    }
+    .hero-title {
+      font-size: 3.5rem;
+      font-weight: 800;
+      margin-bottom: 24px;
+      background: linear-gradient(to right, #ffffff, #94a3b8);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-subtitle {
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto 40px;
+      line-height: 1.6;
+    }
+    .cta-group {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+    }
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+      margin-top: 80px;
+    }
+    .feature-card {
+      padding: 32px;
+      text-align: left;
+    }
+    .feature-icon {
+      font-size: 2rem;
+      margin-bottom: 20px;
+      display: inline-block;
+      padding: 12px;
+      background: rgba(249,115,22,0.1);
+      border-radius: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar" style="padding: 20px 80px;">
+    <div class="sidebar-logo" style="padding:0; border:none; margin:0;">
+      <h2 style="margin:0;">⚡ EventPro</h2>
+    </div>
+    <div class="top-bar-right">
+      <a href="/login" class="btn btn-outline btn-sm">Sign In</a>
+      <a href="/signup" class="btn btn-primary btn-sm">Get Started</a>
+    </div>
+  </div>
+
+  <div class="hero-section">
+    <h1 class="hero-title">Plan Extraordinary Events <br> with Ease.</h1>
+    <p class="hero-subtitle">Connect with top-tier vendors, manage your bookings, and bring your vision to life through our premium management platform.</p>
+    <div class="cta-group">
+      <a href="/signup" class="btn btn-primary" style="padding: 14px 32px; font-size: 1rem;">Start Planning →</a>
+      <a href="/login" class="btn btn-outline" style="padding: 14px 32px; font-size: 1rem;">Vendor Portal</a>
+    </div>
+
+    <div class="page-content" style="max-width: 1200px; margin: 0 auto;">
+      <div class="feature-grid">
+        <div class="card feature-card">
+          <span class="feature-icon">🏪</span>
+          <h3 style="margin-bottom:12px;">Curated Vendors</h3>
+          <p style="color:var(--text-muted); font-size: 0.9rem;">Access a hand-picked selection of top caterers, florists, and more.</p>
+        </div>
+        <div class="card feature-card">
+          <span class="feature-icon">📦</span>
+          <h3 style="margin-bottom:12px;">Order Tracking</h3>
+          <p style="color:var(--text-muted); font-size: 0.9rem;">Monitor your bookings and delivery status in real-time.</p>
+        </div>
+        <div class="card feature-card">
+          <span class="feature-icon">⚡</span>
+          <h3 style="margin-bottom:12px;">Seamless Flow</h3>
+          <p style="color:var(--text-muted); font-size: 0.9rem;">From selection to checkout, managing event logistics has never been smoother.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer style="text-align: center; padding: 60px; color: var(--text-muted); border-top: 1px solid var(--border); margin-top: 100px;">
+    <p>&copy; 2026 EventPro Premium. All rights reserved.</p>
+  </footer>
+</body>
+</html>

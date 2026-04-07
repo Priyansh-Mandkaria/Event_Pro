@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>EventPro — Admin</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="app-layout">
+    <nav class="sidebar">
+      <div class="sidebar-logo">
+        <h2>⚡ EventPro</h2>
+        <p>Administrator Panel</p>
+      </div>
+      <div class="sidebar-section-label">Navigation</div>
+      <a href="/admin" class="sidebar-link active"><span class="icon">🏠</span> Dashboard</a>
+      <a href="/admin/maintain_user" class="sidebar-link"><span class="icon">👥</span> Maintain Users</a>
+      <a href="/admin/maintain_vendor" class="sidebar-link"><span class="icon">🏪</span> Maintain Vendors</a>
+      <a href="/logout" class="sidebar-link" style="margin-top:auto; color:#ef4444;"><span class="icon">🚪</span> Logout</a>
+    </nav>
+    <div class="main-content">
+      <div class="top-bar">
+        <span class="top-bar-title">Admin / Dashboard</span>
+        <div class="top-bar-right">
+          <span class="badge badge-orange">Admin</span>
+        </div>
+      </div>
+      <div class="page-content">
+        <h2 style="font-size:1.6rem; margin-bottom:8px;">Welcome, Admin 👋</h2>
+        <p style="color:var(--text-muted); margin-bottom:28px;">Manage your platform users and vendors from here.</p>
+        <div class="grid-2">
+          <a href="/admin/maintain_user" class="card" style="cursor:pointer; border-color:rgba(249,115,22,0.3);">
+            <div class="card-header">
+              <span class="card-title">Users</span>
+              <span style="font-size:2rem;">👥</span>
+            </div>
+            <div class="card-value" style="font-size:1.2rem; margin-bottom:8px;">Maintain Users</div>
+            <p style="color:var(--text-muted); font-size:0.85rem;">Add, update and manage platform users and memberships</p>
+          </a>
+          <a href="/admin/maintain_vendor" class="card" style="cursor:pointer; border-color:rgba(249,115,22,0.3);">
+            <div class="card-header">
+              <span class="card-title">Vendors</span>
+              <span style="font-size:2rem;">🏪</span>
+            </div>
+            <div class="card-value" style="font-size:1.2rem; margin-bottom:8px;">Maintain Vendors</div>
+            <p style="color:var(--text-muted); font-size:0.85rem;">Add, update and manage vendors across all categories</p>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

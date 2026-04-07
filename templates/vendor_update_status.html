@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>EventPro — Update Status</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script>
+    function selectRadio(el) {
+      document.querySelectorAll('.status-radio').forEach(r => r.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+  </script>
+</head>
+<body>
+  <div class="app-layout">
+    <nav class="sidebar">
+      <div class="sidebar-logo"><h2>⚡ EventPro</h2><p>Vendor Portal</p></div>
+      <div class="sidebar-section-label">Menu</div>
+      <a href="/vendor" class="sidebar-link"><span class="icon">🏠</span> Dashboard</a>
+      <a href="/vendor/add_item" class="sidebar-link"><span class="icon">➕</span> Add New Item</a>
+      <a href="/vendor/product_status" class="sidebar-link active"><span class="icon">📦</span> Orders</a>
+      <a href="/logout" class="sidebar-link" style="margin-top:auto; color:#ef4444;"><span class="icon">🚪</span> Logout</a>
+    </nav>
+    <div class="main-content">
+      <div class="top-bar">
+        <span class="top-bar-title">Vendor / Update Order Status</span>
+      </div>
+      <div class="page-content" style="display:flex; justify-content:center; align-items:center; min-height:70vh;">
+        <div class="card" style="max-width:480px; width:100%;">
+          <h3 style="font-size:1.1rem; margin-bottom:6px;">✏ Update Order Status</h3>
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:24px;">Customer: <strong style="color:var(--text-primary);">{{ order.cust_name }}</strong></p>
+          <form action="/vendor/update_status/{{ order.id }}" method="POST">
+            <div class="status-radio-group">
+              <label class="status-radio {% if order.status == 'Received' %}selected{% endif %}" onclick="selectRadio(this)">
+                <input type="radio" name="order_status" value="Received" {% if order.status == 'Received' %}checked{% endif %}>
+                <div>
+                  <div style="font-weight:600;">📥 Received</div>
+                  <div style="font-size:0.75rem; color:var(--text-muted);">Order has been received</div>
+                </div>
+              </label>
+              <label class="status-radio {% if order.status == 'Ready for Shipping' %}selected{% endif %}" onclick="selectRadio(this)">
+                <input type="radio" name="order_status" value="Ready for Shipping" {% if order.status == 'Ready for Shipping' %}checked{% endif %}>
+                <div>
+                  <div style="font-weight:600;">📦 Ready for Shipping</div>
+                  <div style="font-size:0.75rem; color:var(--text-muted);">Packed and ready to dispatch</div>
+                </div>
+              </label>
+              <label class="status-radio {% if order.status == 'Out For Delivery' %}selected{% endif %}" onclick="selectRadio(this)">
+                <input type="radio" name="order_status" value="Out For Delivery" {% if order.status == 'Out For Delivery' %}checked{% endif %}>
+                <div>
+                  <div style="font-weight:600;">🚚 Out For Delivery</div>
+                  <div style="font-size:0.75rem; color:var(--text-muted);">On the way to customer</div>
+                </div>
+              </label>
+            </div>
+            <div style="margin-top:24px; display:flex; gap:12px;">
+              <button type="submit" class="btn btn-primary" style="flex:1;">Save Status →</button>
+              <a href="/vendor/product_status" class="btn btn-outline">Cancel</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

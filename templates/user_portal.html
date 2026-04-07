@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>EventPro — User Portal</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Left sidebar: category dropdown -->
+    <nav class="sidebar" style="width:200px;">
+      <div class="sidebar-logo"><h2>⚡ EventPro</h2><p>User Portal</p></div>
+      <div class="sidebar-section-label">Categories</div>
+      <a href="/user/vendors?category=Catering" class="category-pill">🍽 Catering</a>
+      <a href="/user/vendors?category=Florist" class="category-pill">🌸 Florist</a>
+      <a href="/user/vendors?category=Decoration" class="category-pill">🎨 Decoration</a>
+      <a href="/user/vendors?category=Lightning" class="category-pill">💡 Lighting</a>
+      <div style="margin-top:auto; padding: 0 12px 20px;">
+        <a href="/logout" class="btn btn-danger btn-full btn-sm">🚪 Logout</a>
+      </div>
+    </nav>
+
+    <div class="main-content" style="margin-left:200px;">
+      <div class="top-bar">
+        <span class="top-bar-title">User Portal</span>
+        <div class="top-bar-right">
+          <a href="/user/cart" class="btn btn-outline btn-sm">🛒 Cart</a>
+          <a href="/user/order_status" class="btn btn-outline btn-sm">📦 My Orders</a>
+        </div>
+      </div>
+      <div class="page-content">
+        <h2 style="font-size:1.6rem; margin-bottom:8px;">Welcome! 👋</h2>
+        <p style="color:var(--text-muted); margin-bottom:32px;">Browse our categories and discover amazing vendors for your event.</p>
+
+        <h3 style="font-size:0.85rem; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted); margin-bottom:16px;">Browse by Category</h3>
+        <div class="grid-4">
+          <a href="/user/vendors?category=Catering" class="card" style="text-align:center; cursor:pointer; border-color:rgba(249,115,22,0.3);">
+            <div style="font-size:2.5rem; margin-bottom:12px;">🍽</div>
+            <div style="font-weight:600;">Catering</div>
+            <p style="color:var(--text-muted); font-size:0.8rem; margin-top:4px;">Food &amp; Beverages</p>
+          </a>
+          <a href="/user/vendors?category=Florist" class="card" style="text-align:center; cursor:pointer; border-color:rgba(249,115,22,0.3);">
+            <div style="font-size:2.5rem; margin-bottom:12px;">🌸</div>
+            <div style="font-weight:600;">Florist</div>
+            <p style="color:var(--text-muted); font-size:0.8rem; margin-top:4px;">Flowers &amp; Arrangements</p>
+          </a>
+          <a href="/user/vendors?category=Decoration" class="card" style="text-align:center; cursor:pointer; border-color:rgba(249,115,22,0.3);">
+            <div style="font-size:2.5rem; margin-bottom:12px;">🎨</div>
+            <div style="font-weight:600;">Decoration</div>
+            <p style="color:var(--text-muted); font-size:0.8rem; margin-top:4px;">Event Styling</p>
+          </a>
+          <a href="/user/vendors?category=Lightning" class="card" style="text-align:center; cursor:pointer; border-color:rgba(249,115,22,0.3);">
+            <div style="font-size:2.5rem; margin-bottom:12px;">💡</div>
+            <div style="font-weight:600;">Lighting</div>
+            <p style="color:var(--text-muted); font-size:0.8rem; margin-top:4px;">Ambiance &amp; Lights</p>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

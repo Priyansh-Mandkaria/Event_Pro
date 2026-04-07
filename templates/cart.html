@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>EventPro — Cart</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="app-layout">
+    <nav class="sidebar" style="width:200px;">
+      <div class="sidebar-logo"><h2>⚡ EventPro</h2><p>User Portal</p></div>
+      <div class="sidebar-section-label">Categories</div>
+      <a href="/user/vendors?category=Catering" class="category-pill">🍽 Catering</a>
+      <a href="/user/vendors?category=Florist" class="category-pill">🌸 Florist</a>
+      <a href="/user/vendors?category=Decoration" class="category-pill">🎨 Decoration</a>
+      <a href="/user/vendors?category=Lightning" class="category-pill">💡 Lighting</a>
+      <div style="margin-top:auto; padding: 0 12px 20px;">
+        <a href="/logout" class="btn btn-danger btn-full btn-sm">🚪 Logout</a>
+      </div>
+    </nav>
+    <div class="main-content" style="margin-left:200px;">
+      <div class="top-bar">
+        <span class="top-bar-title">Navigation / Cart</span>
+        <div class="top-bar-right">
+          <a href="/user" class="btn btn-outline btn-sm">← Continue Shopping</a>
+        </div>
+      </div>
+      <div class="page-content">
+        <h2 style="font-size:1.4rem; margin-bottom:24px;">🛒 Your Shopping Cart</h2>
+        
+        <div class="grid-2" style="grid-template-columns: 2fr 1fr; align-items: start;">
+          <!-- Cart Items -->
+          <div class="card">
+            {% if items %}
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Quantity</th>
+                  <th style="text-align:right;">Subtotal</th>
+                  <th style="text-align:right;">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for i in items %}
+                <tr>
+                  <td>
+                    <div style="display:flex; align-items:center; gap:12px;">
+                      {% if i.product.image_name and i.product.image_name != 'default.png' %}
+                      <img src="/static/uploads/{{ i.product.image_name }}" style="width:48px; height:48px; object-fit:cover; border-radius:6px;">
+                      {% else %}
+                      <div style="width:48px; height:48px; background:var(--bg-card-alt); border-radius:6px; display:flex; align-items:center; justify-content:center;">📦</div>
+                      {% endif %}
+                      <div>
+                        <div style="font-weight:600;">{{ i.product.name }}</div>
+                        <div style="font-size:0.75rem; color:var(--text-muted);">₹{{ i.product.price }} per unit</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <div style="display:flex; align-items:center; gap:12px;">
+                      <form action="/cart/update/{{ i.cart_id }}" method="POST" style="margin:0;">
+                        <input type="hidden" name="change" value="-1">
+                        <button type="submit" class="btn btn-outline btn-sm" style="padding: 2px 8px; font-weight: 700;">−</button>
+                      </form>
+                      
+                      <span class="badge badge-orange" style="font-size: 0.9rem; min-width: 24px; text-align: center;">{{ i.quantity }}</span>
+                      
+                      <form action="/cart/update/{{ i.cart_id }}" method="POST" style="margin:0;">
+                        <input type="hidden" name="change" value="1">
+                        <button type="submit" class="btn btn-outline btn-sm" style="padding: 2px 8px; font-weight: 700;">+</button>
+                      </form>
+                    </div>
+                  </td>
+                  <td style="text-align:right; font-weight:600; color:var(--accent-orange);">₹{{ i.total }}</td>
+                  <td style="text-align:right;">
+                    <form action="/cart/remove/{{ i.cart_id }}" method="POST" style="margin:0;">
+                      <button type="submit" class="btn btn-danger btn-sm" style="padding: 4px 8px;">🗑</button>
+                    </form>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            <div style="margin-top:20px; display:flex; justify-content:flex-end;">
+              <form action="/cart/delete_all" method="POST">
+                <button type="submit" class="btn btn-danger btn-sm">Clear Cart</button>
+              </form>
+            </div>
+            {% else %}
+            <div style="text-align:center; padding:60px; color:var(--text-muted);">
+              <div style="font-size:4rem; margin-bottom:16px;">🛒</div>
+              <p>Your cart is empty.</p>
+              <a href="/user" class="btn btn-primary" style="margin-top:20px;">Start Shopping</a>
+            </div>
+            {% endif %}
+          </div>
+
+          <!-- Summary -->
+          {% if items %}
+          <div class="cart-summary">
+            <h3 style="font-size:0.9rem; margin-bottom:20px; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted);">Order Summary</h3>
+            <div style="display:flex; justify-content:space-between; margin-bottom:12px; font-size:0.9rem;">
+              <span style="color:var(--text-secondary);">Subtotal</span>
+              <span>₹{{ grand_total }}</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:20px; font-size:1.1rem; font-weight:700;">
+              <span>Grand Total</span>
+              <span style="color:var(--accent-orange);">₹{{ grand_total }}</span>
+            </div>
+            <a href="/user/checkout" class="btn btn-primary btn-full">Proceed to Checkout →</a>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

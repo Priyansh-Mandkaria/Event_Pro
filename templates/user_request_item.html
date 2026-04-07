@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>EventPro — Request Item</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="app-layout">
+    <div class="main-content" style="margin-left:0; align-items:center; justify-content:center;">
+      <div class="auth-card" style="max-width:500px;">
+        <div class="auth-logo">
+          <h2 style="font-size:1.8rem; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Custom Request</h2>
+          <p>Need something special not listed? Ask the vendor.</p>
+        </div>
+
+        <form action="/user/request_item/{{ vendor_id }}" method="POST">
+          <div class="form-group" style="margin-bottom:24px;">
+            <label class="form-label">What are you looking for?</label>
+            <textarea name="item_name" class="form-control" rows="5" placeholder="Describe the item or service you'd like to request..." required style="resize:none;"></textarea>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:12px;">
+            <button type="submit" class="btn btn-primary btn-full" style="padding:14px;">Submit Request →</button>
+            <a href="/user/products/{{ vendor_id }}" class="btn btn-outline btn-full">Cancel</a>
+          </div>
+        </form>
+
+        <div style="margin-top:32px; padding:16px; background:rgba(249,115,22,0.05); border-radius:12px; border:1px solid rgba(249,115,22,0.1);">
+          <p style="font-size:0.8rem; color:var(--text-secondary); line-height:1.5;">💡 <strong>Note:</strong> The vendor will be notified of your request and may contact you via email to discuss details and pricing.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

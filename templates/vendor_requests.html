@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>EventPro — Vendor Requests</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="app-layout">
+    <nav class="sidebar">
+      <div class="sidebar-logo"><h2>⚡ EventPro</h2><p>Vendor Portal</p></div>
+      <div class="sidebar-section-label">Menu</div>
+      <a href="/vendor" class="sidebar-link"><span class="icon">🏠</span> Dashboard</a>
+      <a href="/vendor/add_item" class="sidebar-link"><span class="icon">➕</span> Add New Item</a>
+      <a href="/vendor/product_status" class="sidebar-link"><span class="icon">📦</span> Orders</a>
+      <a href="/vendor/requests" class="sidebar-link active"><span class="icon">📋</span> Custom Requests</a>
+      <a href="/logout" class="sidebar-link" style="margin-top:auto; color:#ef4444;"><span class="icon">🚪</span> Logout</a>
+    </nav>
+    <div class="main-content">
+      <div class="top-bar">
+        <span class="top-bar-title">Vendor / Custom Requests</span>
+      </div>
+      <div class="page-content">
+        <h2 style="font-size:1.4rem; margin-bottom:24px;">📋 Custom Customer Requests</h2>
+        <div class="card">
+          {% if requests %}
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Customer Name</th>
+                <th>Contact</th>
+                <th>Request Detail</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for r in requests %}
+              <tr>
+                <td>{{ r.cust_name }}</td>
+                <td style="color:var(--text-muted);">{{ r.cust_email }}</td>
+                <td style="max-width:300px;">{{ r.item_name }}</td>
+                <td><span class="badge badge-orange">{{ r.status }}</span></td>
+                <td>
+                  <form action="/vendor/request/delete/{{ r.id }}" method="POST" style="margin:0;">
+                    <button type="submit" class="btn btn-danger btn-sm">Dismiss</button>
+                  </form>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% else %}
+          <div style="text-align:center; padding:60px; color:var(--text-muted);">
+            <div style="font-size:3rem; margin-bottom:12px;">📋</div>
+            <p>No custom requests from customers yet.</p>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

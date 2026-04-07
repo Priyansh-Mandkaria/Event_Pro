@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>EventPro — Add Item</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="app-layout">
+    <nav class="sidebar">
+      <div class="sidebar-logo"><h2>⚡ EventPro</h2><p>Vendor Portal</p></div>
+      <div class="sidebar-section-label">Menu</div>
+      <a href="/vendor" class="sidebar-link"><span class="icon">🏠</span> Dashboard</a>
+      <a href="/vendor/add_item" class="sidebar-link active"><span class="icon">➕</span> Add New Item</a>
+      <a href="/vendor/product_status" class="sidebar-link"><span class="icon">📦</span> Orders</a>
+      <a href="/vendor/requests" class="sidebar-link"><span class="icon">📋</span> Custom Requests</a>
+      <a href="/logout" class="sidebar-link" style="margin-top:auto; color:#ef4444;"><span class="icon">🚪</span> Logout</a>
+    </nav>
+    <div class="main-content">
+      <div class="top-bar">
+        <span class="top-bar-title">Vendor / Manage Products</span>
+      </div>
+      <div class="page-content">
+        <div class="grid-2" style="align-items:start;">
+          <!-- Add Form -->
+          <div class="card">
+            <h3 style="font-size:1rem; font-weight:600; margin-bottom:20px;">➕ Add New Product</h3>
+            <form action="/vendor/add_product" method="POST" enctype="multipart/form-data">
+              <div class="form-group">
+                <label class="form-label">Product Name</label>
+                <input type="text" name="name" class="form-control" placeholder="e.g. Floral Centerpiece" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Price (Rs)</label>
+                <input type="number" name="price" class="form-control" placeholder="e.g. 1500" step="0.01" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Product Description</label>
+                <input type="text" name="description" class="form-control" placeholder="Brief description...">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Product Image</label>
+                <input type="file" name="image" class="form-control" accept="image/*">
+                <p style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Upload a JPG, PNG or WEBP image</p>
+              </div>
+              <button type="submit" class="btn btn-primary btn-full">Add Product →</button>
+            </form>
+          </div>
+
+          <!-- Products Table -->
+          <div class="card">
+            <h3 style="font-size:1rem; font-weight:600; margin-bottom:20px;">📦 Your Products</h3>
+            {% if products %}
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Image</th>
+                  <th>Name</th>
+                  <th>Price</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for p in products %}
+                <tr>
+                  <td>
+                    {% if p.image_name and p.image_name != 'default.png' %}
+                    <img src="/static/uploads/{{ p.image_name }}" style="width:48px; height:48px; object-fit:cover; border-radius:6px;">
+                    {% else %}
+                    <div style="width:48px; height:48px; background:var(--bg-card-alt); border-radius:6px; display:flex; align-items:center; justify-content:center;">📦</div>
+                    {% endif %}
+                  </td>
+                  <td>{{ p.name }}</td>
+                  <td><span style="color:var(--accent-orange); font-weight:600;">₹{{ p.price }}</span></td>
+                  <td>
+                    <button class="btn btn-danger btn-sm">Delete</button>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            {% else %}
+            <div style="text-align:center; padding:40px; color:var(--text-muted);">
+              <div style="font-size:3rem; margin-bottom:12px;">📭</div>
+              <p>No products yet. Add your first product!</p>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

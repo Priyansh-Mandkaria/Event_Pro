@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>EventPro — Vendor Dashboard</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="app-layout">
+    <nav class="sidebar">
+      <div class="sidebar-logo"><h2>⚡ EventPro</h2><p>Vendor Portal</p></div>
+      <div class="sidebar-section-label">Menu</div>
+      <a href="/vendor" class="sidebar-link active"><span class="icon">🏠</span> Dashboard</a>
+      <a href="/vendor/add_item" class="sidebar-link"><span class="icon">➕</span> Add New Item</a>
+      <a href="/vendor/product_status" class="sidebar-link"><span class="icon">📦</span> Orders</a>
+      <a href="/vendor/requests" class="sidebar-link"><span class="icon">📋</span> Custom Requests</a>
+      <a href="/logout" class="sidebar-link" style="margin-top:auto; color:#ef4444;"><span class="icon">🚪</span> Logout</a>
+    </nav>
+    <div class="main-content">
+      <div class="top-bar">
+        <span class="top-bar-title">Vendor / Dashboard</span>
+        <div class="top-bar-right">
+          <span class="badge badge-orange">{{ vendor_name }}</span>
+        </div>
+      </div>
+      <div class="page-content">
+        <h2 style="font-size:1.6rem; margin-bottom:8px;">Welcome back! 👋</h2>
+        <p style="color:var(--text-muted); margin-bottom:28px;">Manage your products and track incoming orders.</p>
+        <div class="grid-3">
+          <a href="/vendor/add_item" class="card" style="cursor:pointer; border-color:rgba(249,115,22,0.3);">
+            <div style="font-size:2.5rem; margin-bottom:12px;">📦</div>
+            <div style="font-weight:600; font-size:1rem;">Manage Items</div>
+            <p style="color:var(--text-muted); font-size:0.8rem; margin-top:4px;">Add and manage your products</p>
+          </a>
+          <a href="/vendor/product_status" class="card" style="cursor:pointer; border-color:rgba(249,115,22,0.3);">
+            <div style="font-size:2.5rem; margin-bottom:12px;">🚚</div>
+            <div style="font-weight:600; font-size:1rem;">Order Tracking</div>
+            <p style="color:var(--text-muted); font-size:0.8rem; margin-top:4px;">Track and update customer orders</p>
+          </a>
+          <div class="card" style="border-color:rgba(249,115,22,0.3);">
+            <div style="font-size:2.5rem; margin-bottom:12px;">📊</div>
+            <div style="font-weight:600; font-size:1rem;">Analytics</div>
+            <p style="color:var(--text-muted); font-size:0.8rem; margin-top:4px;">View your sales performance</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

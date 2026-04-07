@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>EventPro — Maintain Vendors</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="app-layout">
+    <nav class="sidebar">
+      <div class="sidebar-logo"><h2>⚡ EventPro</h2><p>Administrator Panel</p></div>
+      <div class="sidebar-section-label">Navigation</div>
+      <a href="/admin" class="sidebar-link"><span class="icon">🏠</span> Dashboard</a>
+      <a href="/admin/maintain_user" class="sidebar-link"><span class="icon">👥</span> Maintain Users</a>
+      <a href="/admin/maintain_vendor" class="sidebar-link active"><span class="icon">🏪</span> Maintain Vendors</a>
+      <a href="/logout" class="sidebar-link" style="margin-top:auto; color:#ef4444;"><span class="icon">🚪</span> Logout</a>
+    </nav>
+    <div class="main-content">
+      <div class="top-bar">
+        <span class="top-bar-title">Admin / Maintain Vendors</span>
+      </div>
+      <div class="page-content">
+        <h2 style="font-size:1.4rem; margin-bottom:24px;">Vendor Management</h2>
+        <div class="card" style="margin-bottom:16px;">
+          <h3 style="font-size:0.9rem; color:var(--text-muted); margin-bottom:16px; text-transform:uppercase; letter-spacing:1px;">🎟 Membership</h3>
+          <div class="admin-action-row">
+            <div>
+              <div style="font-weight:600;">Vendor Membership</div>
+              <div style="font-size:0.8rem; color:var(--text-muted);">Manage vendor membership plans and subscriptions</div>
+            </div>
+            <div class="admin-action-buttons">
+              <button class="btn btn-primary btn-sm">+ Add</button>
+              <button class="btn btn-outline btn-sm">✏ Update</button>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h3 style="font-size:0.9rem; color:var(--text-muted); margin-bottom:16px; text-transform:uppercase; letter-spacing:1px;">🏪 Vendor Management</h3>
+          <div class="admin-action-row">
+            <div>
+              <div style="font-weight:600;">Manage Vendors</div>
+              <div style="font-size:0.8rem; color:var(--text-muted);">Add or update vendor profiles across all categories</div>
+            </div>
+            <div class="admin-action-buttons">
+              <button class="btn btn-primary btn-sm">+ Add</button>
+              <button class="btn btn-outline btn-sm">✏ Update</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}App{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h2>CompanyApp</h2>
+            <nav>
+                {% if user %}
+                    <span>Hello, {{ user.email }} ({{ user.role }})</span>
+                    <a href="/logout" class="btn" style="margin-left:1rem; background-color:var(--text-muted)">Logout</a>
+                {% else %}
+                    <a href="/login" class="btn">Login</a>
+                    <a href="/signup" class="btn" style="background-color:white; color:var(--primary-color); border:1px solid var(--primary-color);">Sign Up</a>
+                {% endif %}
+            </nav>
+        </header>
+        
+        <main>
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</body>
+</html>
